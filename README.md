@@ -27,12 +27,6 @@ Big Seven Arcade is a Python-based casino arcade game that lets players enjoy tw
 - random
 - time
 
-## How to Run
-
-```bash
-python big_seven_arcade.py
-```
-
 ## Authors
 - Ibrahim Muamar
 - Alex Udvar
