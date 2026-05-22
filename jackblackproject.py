@@ -6,6 +6,9 @@
 import random
 import time
 
+# make a file name
+SAVE_FILE = "tokens.txt"
+LEADERBOARD_FILE = "leaderboard.txt"
 
 def intro_to_arcade():
     print("Welcome to Big Seven! At this arcade we have a variety of games to play such as Roulette and Blackjack with our own little spin on those classics. You will be given 100 tokens and make sure to have fun!")
@@ -45,7 +48,11 @@ def bet_tokens(tokens):
                 return user_bet
         except:
             print("Please input a valid number!")
-
+            
+def save_score(username, tokens):
+    file = open(LEADERBOARD_FILE, "a")
+    file.write(username + " - " + str(tokens) + "\n")
+    file.close()
 
 def draw_card(tokens, ai_wins, user_bet):
     user_cards = []
@@ -67,6 +74,9 @@ def draw_card(tokens, ai_wins, user_bet):
     if user_card1 == 7 and user_card2 == 7:
         print("*You drew 2 7's congratulations you won!*")
         tokens = tokens + user_bet * 2
+        file = open(SAVE_FILE, "w")
+        file.write(str(tokens))
+        file.close()
         time.sleep(1)
         return user_cards, ai_cards, tokens, True
 
@@ -84,6 +94,9 @@ def draw_card(tokens, ai_wins, user_bet):
         print("*The Dealer drew 2 7's, You lose!*")
         ai_wins = ai_wins + 1
         tokens = tokens - user_bet
+        file = open(SAVE_FILE, "w")
+        file.write(str(tokens))
+        file.close()
         time.sleep(1)
         return user_cards, ai_cards, tokens, False
 
@@ -130,6 +143,9 @@ def hit_or_stay(user_cards, ai_cards, tokens, user_bet):
                 if user_cards.count(7) == 2:
                     print("Lucky 7! You have two 7's in your hand. You win!!")
                     tokens = tokens + user_bet * 2
+                    file = open(SAVE_FILE, "w")
+                    file.write(str(tokens))
+                    file.close()
                     return tokens, True
 
                 total = 0
@@ -176,6 +192,9 @@ def hit_or_stay(user_cards, ai_cards, tokens, user_bet):
                 if ai_total > 21 or user_total > ai_total:
                     print("Congratulations, you win!")
                     tokens = tokens + user_bet * 2
+                    file = open(SAVE_FILE, "w")
+                    file.write(str(tokens))
+                    file.close()
                     return tokens, True
                 elif user_total == ai_total:
                     print("It's a tie! Your bet is returned.")
@@ -183,6 +202,9 @@ def hit_or_stay(user_cards, ai_cards, tokens, user_bet):
                 else:
                     print("AI wins! Better luck next time.")
                     tokens = tokens - user_bet
+                    file = open(SAVE_FILE, "w")
+                    file.write(str(tokens))
+                    file.close()
                     return tokens, False
 
             else:
@@ -343,16 +365,34 @@ def roulette(tokens):
 
     if bet_type == "number" and bet_number == winning_number:
         tokens += bet_value * 36
+        file = open(SAVE_FILE, "w")
+        file.write(str(tokens))
+        file.close()
     elif bet_type == "color" and bet_color == winning_color:
         tokens += bet_value * 2
+        file = open(SAVE_FILE, "w")
+        file.write(str(tokens))
+        file.close()
     elif bet_type == "even" and winning_number % 2 == 0 and winning_number != 0:
         tokens += bet_value * 2
+        file = open(SAVE_FILE, "w")
+        file.write(str(tokens))
+        file.close()
     elif bet_type == "odd" and winning_number % 2 != 0:
         tokens += bet_value * 2
+        file = open(SAVE_FILE, "w")
+        file.write(str(tokens))
+        file.close()
     elif bet_type == "zero" and winning_number == 0:
         tokens += bet_value * 36
+        file = open(SAVE_FILE, "w")
+        file.write(str(tokens))
+        file.close()
     else:
         tokens -= bet_value
+        file = open(SAVE_FILE, "w")
+        file.write(str(tokens))
+        file.close()
 
     if tokens > tokens_starting:
         print("Congratulations! You won! Your new token balance is:", tokens)
@@ -395,12 +435,40 @@ def display_rules():
         time.sleep(1)
         print("The tokens you start with is 100. There are different odds for each game and if you reach 0. You lose! Have fun!")
 
+def display_leaderboard():
+
+    file = open(LEADERBOARD_FILE, "r")
+
+    scores = []
+
+    for line in file:
+
+        username, tokens = line.strip().split(",")
+
+        scores.append((username, int(tokens)))
+
+    file.close()
+
+    scores.sort(key=lambda x: x[1], reverse=True)
+
+    print("\n=== LEADERBOARD ===")
+
+    for i, score in enumerate(scores, start=1):
+
+        print(str(i) + ". " + score[0] + " - " + str(score[1]))
 
 def main():
-    tokens = 100
     ai_wins = 0
+    try:
+        file = open(SAVE_FILE, "r")
+        tokens = int(file.read())
+        file.close()
 
+    except:
+        tokens = 100
+    
     intro_to_arcade()
+    username = input("Enter your username: ")
 
     while True:
         print("You have " + str(tokens) + " tokens.")
@@ -436,6 +504,8 @@ def main():
         play_again = input("Write 'yes' to play again, 'no' otherwise: ").lower()
 
         if play_again == "no":
+            save_score(username, tokens)
+            display_leaderboard()
             print("Thanks for visiting the Big Seven Arcade! See you again!")
             break
 
