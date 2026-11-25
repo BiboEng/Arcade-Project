@@ -1,4 +1,4 @@
-# Big Seven Arcade
+# Big Seven Arcade(School final project)
 
 Big Seven Arcade is a Python-based casino arcade game that lets players enjoy two classic games with custom twists: Blackjack and Roulette. Players start with 100 tokens and can choose to play games, read the rules, or quit through a simple text-based menu system.
 
